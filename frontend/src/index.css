@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  /* Фоны */
+  --color-base: #0F172A;
+  --color-surface: #1E293B;
+  --color-surface-hover: #273548;
+
+  /* Акценты */
+  --color-accent-purple: #8B5CF6;
+  --color-accent-blue: #3B82F6;
+
+  /* Состояния */
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #EAB308;
+
+  /* Текст */
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #475569;
+
+  /* Ранги */
+  --color-rank-bronze: #CD7F32;
+  --color-rank-silver: #C0C0C0;
+  --color-rank-gold: #FFD700;
+  --color-rank-platinum: #E5E4E2;
+  --color-rank-diamond: #B9F2FF;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0F172A;
+  color: #F1F5F9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
