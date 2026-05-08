@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from sqlalchemy import Integer, String, Float, Boolean, Date, DateTime, func
+from sqlalchemy import Integer, String, Float, Boolean, Date, DateTime, Index, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from typing import TYPE_CHECKING
@@ -65,6 +65,10 @@ class User(Base):
     )
     achievements: Mapped[list["UserAchievement"]] = relationship(
         "UserAchievement", back_populates="user"
+    )
+    __table_args__ = (
+        Index("ix_users_elo_rating", "elo_rating"),
+        Index("ix_users_is_active", "is_active"),
     )
 
     def __repr__(self):

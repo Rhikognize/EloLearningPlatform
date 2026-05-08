@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any
-from sqlalchemy import Integer, String, Text, Float, Boolean, DateTime, ForeignKey, Enum, JSON, func
+from sqlalchemy import Integer, String, Text, Float, Boolean, DateTime, ForeignKey, Enum, JSON, Index, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 from app.database import Base
@@ -87,6 +87,11 @@ class Task(Base):
         "Category", back_populates="tasks")
     history: Mapped[list["UserTaskHistory"]] = relationship(
         "UserTaskHistory", back_populates="task"
+    )
+    __table_args__ = (
+        Index("ix_tasks_category_difficulty", "category_id", "difficulty"),
+        Index("ix_tasks_is_active", "is_active"),
+        Index("ix_tasks_elo_rating", "elo_rating"),
     )
 
     def __repr__(self):
