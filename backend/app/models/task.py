@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any
-from sqlalchemy import Integer, String, Text, Float, Boolean, DateTime, ForeignKey, Enum, JSON, Index, func
+from sqlalchemy import Integer, String, Text, Float, Boolean, DateTime, ForeignKey, Enum, JSON, Index, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 from app.database import Base
@@ -94,5 +94,14 @@ class Task(Base):
         Index("ix_tasks_elo_rating", "elo_rating"),
     )
 
-    def __repr__(self):
-        return f"<Task id={self.id} title={self.title!r} elo={self.elo_rating}>"
+
+__table_args__ = (
+    Index("ix_tasks_category_difficulty", "category_id", "difficulty"),
+    Index("ix_tasks_is_active", "is_active"),
+    Index("ix_tasks_elo_rating", "elo_rating"),
+    UniqueConstraint("title", name="uq_tasks_title"),
+)
+
+
+def __repr__(self):
+    return f"<Task id={self.id} title={self.title!r} elo={self.elo_rating}>"
