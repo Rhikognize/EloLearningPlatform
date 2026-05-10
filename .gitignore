@@ -22,3 +22,5 @@ Thumbs.db
 
 # Alembic
 *.pyc
+
+RUN COMMANDS.txt

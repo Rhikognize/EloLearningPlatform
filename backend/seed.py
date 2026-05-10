@@ -904,11 +904,11 @@ async def main():
             await seed_tasks(session, category_map)
 
             await session.commit()
-            print("\n✅ Seed finalizat cu succes!\n")
+            print("\nSeed finalizat cu succes!\n")
 
         except Exception as e:
             await session.rollback()
-            print(f"\n❌ Eroare la seed: {e}")
+            print(f"\nEroare la seed: {e}")
             raise
 
 

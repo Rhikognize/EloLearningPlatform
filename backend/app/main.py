@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
+from app.routers import auth
 
 # Inițializare aplicație
 app = FastAPI(
@@ -10,13 +11,12 @@ app = FastAPI(
 )
 
 # Configurare CORS
-origins = [
-    settings.CORS_ORIGIN,
-]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # Permite request-uri doar de la originile specificate
+    # Permite request-uri doar de la originile specificate
+    allow_origins=[settings.CORS_ORIGIN],
     allow_credentials=True,      # Permite trimiterea de cookies/tokeni de autentificare
     # Permite toate metodele HTTP (GET, POST, PUT, DELETE, etc.)
     allow_methods=["*"],
@@ -24,6 +24,8 @@ app.add_middleware(
 )
 
 # Endpoint de test (Health Check)
+
+app.include_router(auth.router)
 
 
 @app.get("/api/health", tags=["System"])
