@@ -37,11 +37,17 @@ async def get_or_create_daily_goal(
 async def record_attempt(
     goal: DailyGoal,
     is_correct: bool,
+    is_first_correct: bool = True,
 ) -> bool:
     goal.tasks_solved_count += 1
 
-    if is_correct:
+    # Contorizăm pentru obiectivul zilnic doar prima rezolvare corectă
+    # Dacă rezolvi aceeași sarcină de 5 ori corect — contează o singură dată
+    if is_correct and is_first_correct:
         goal.correct_answers_count += 1
+    elif not is_correct:
+        # Greșelile le contorizăm întotdeauna (pentru statistici)
+        pass
 
     was_reached_before = goal.is_goal_reached
 
