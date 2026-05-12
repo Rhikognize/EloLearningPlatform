@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth
 from app.routers import tasks
-from app.routers import auth, tasks, daily_goal
-
+from app.routers import auth, tasks, daily_goal, users, leaderboard
 # Inițializare aplicație
 app = FastAPI(
     title="EloLearning Platform API",
@@ -22,6 +21,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(daily_goal.router)
+app.include_router(users.router)
+app.include_router(leaderboard.router)
 
 
 @app.get("/api/health", tags=["System"])
