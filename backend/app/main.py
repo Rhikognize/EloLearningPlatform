@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth
+from app.routers import tasks
 
 # Inițializare aplicație
 app = FastAPI(
@@ -9,23 +10,16 @@ app = FastAPI(
     description="Backend-ul pentru platforma de învățare EloLearning",
     version="1.0.0"
 )
-
-# Configurare CORS
-
-
 app.add_middleware(
     CORSMiddleware,
-    # Permite request-uri doar de la originile specificate
     allow_origins=[settings.CORS_ORIGIN],
     allow_credentials=True,      # Permite trimiterea de cookies/tokeni de autentificare
     # Permite toate metodele HTTP (GET, POST, PUT, DELETE, etc.)
     allow_methods=["*"],
-    allow_headers=["*"],         # Permite toate headerele
+    allow_headers=["*"],
 )
-
-# Endpoint de test (Health Check)
-
 app.include_router(auth.router)
+app.include_router(tasks.router)
 
 
 @app.get("/api/health", tags=["System"])
