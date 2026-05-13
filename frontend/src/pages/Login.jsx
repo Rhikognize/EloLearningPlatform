@@ -22,7 +22,7 @@ export default function Login() {
 
     try {
       const { data } = await api.post('/auth/login', formData)
-      login(data)
+      await login(data)
       navigate('/dashboard')
     } catch (err) {
       const message = err.response?.data?.detail || 'Eroare la autentificare'

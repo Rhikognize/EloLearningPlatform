@@ -30,7 +30,7 @@ export default function Navbar() {
   ]
 
   if (!isAuthenticated) return null
-
+  
   const rank = getRank(user?.elo_rating || 1200)
 
   return (
