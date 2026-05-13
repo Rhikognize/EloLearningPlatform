@@ -31,7 +31,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Dacă primim 401 și NU este cererea de refresh (ca să nu intrăm în buclă aici)
+    if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/refresh') {
       originalRequest._retry = true
 
       try {
@@ -42,11 +43,10 @@ api.interceptors.response.use(
         setAccessToken(data.access_token)
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`
         return api(originalRequest)
-
-      } catch {
+      } catch (refreshError) {
         clearAccessToken()
-        window.location.href = '/login'
-        return Promise.reject(error)
+        // ȘTERGE window.location.href = '/login'
+        return Promise.reject(refreshError)
       }
     }
 
