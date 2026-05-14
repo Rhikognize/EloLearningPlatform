@@ -1,46 +1,134 @@
+import { useState, useEffect } from 'react'
 import Layout from '../components/Layout'
-import { useToast } from '../components/Toast'
+import StreakWidget from '../components/StreakWidget'
+import DailyGoalWidget from '../components/DailyGoalWidget'
+import EloChart from '../components/EloChart'
+import RecommendedTasks from '../components/RecommendedTasks'
+import { ProfileSkeleton } from '../components/Skeleton'
+import { getRank } from '../utils/ranks'
+import api from '../api/axios'
+import { Shield, Target, Zap } from 'lucide-react'
 
 export default function Dashboard() {
-  const { addToast } = useToast()
+  const [profile, setProfile] = useState(null)
+  const [history, setHistory] = useState([])
+  const [dailyGoal, setDailyGoal] = useState(null)
+  const [recommended, setRecommended] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadingRec, setLoadingRec] = useState(true)
+
+  useEffect(() => {
+    loadDashboard()
+  }, [])
+
+  async function loadDashboard() {
+    setLoading(true)
+    try {
+      const [profileRes, historyRes, goalRes] = await Promise.all([
+        api.get('/users/me'),
+        api.get('/users/me/history?limit=20'),
+        api.get('/daily-goal/today'),
+      ])
+      setProfile(profileRes.data)
+      setHistory(historyRes.data.items)
+      setDailyGoal(goalRes.data)
+    } catch (err) {
+      console.error('Eroare la încărcarea dashboard-ului', err)
+    } finally {
+      setLoading(false)
+    }
+
+    // Recomandările se încarcă separat (mai puțin urgente)
+    try {
+      const { data } = await api.get('/tasks/recommended')
+      setRecommended(data)
+    } catch {
+      setRecommended([])
+    } finally {
+      setLoadingRec(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ProfileSkeleton />
+          <ProfileSkeleton />
+          <ProfileSkeleton />
+          <ProfileSkeleton />
+        </div>
+      </Layout>
+    )
+  }
+
+  const rank = getRank(profile?.elo_rating || 1200)
 
   return (
     <Layout>
-      <h1 className="text-3xl font-bold text-text-primary mb-6">Dashboard</h1>
 
-      <div className="flex flex-col gap-3 max-w-xs">
-        <button
-          onClick={() => addToast('Răspuns corect! +27 ELO', 'success')}
-          className="bg-success/20 border border-success/30 text-success
-                     py-2 px-4 rounded-lg hover:bg-success/30 transition-colors"
-        >
-          Test success toast
-        </button>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-text-primary">
+          Bună, <span className="text-accent-purple">{profile?.username}</span>! 👋
+        </h1>
 
-        <button
-          onClick={() => addToast('Răspuns greșit -5 ELO', 'error')}
-          className="bg-error/20 border border-error/30 text-error
-                     py-2 px-4 rounded-lg hover:bg-error/30 transition-colors"
-        >
-          Test error toast
-        </button>
-
-        <button
-          onClick={() => addToast('Achievement deblocat! 🏆', 'achievement')}
-          className="bg-warning/20 border border-warning/30 text-warning
-                     py-2 px-4 rounded-lg hover:bg-warning/30 transition-colors"
-        >
-          Test achievement toast
-        </button>
-
-        <button
-          onClick={() => addToast('Informație importantă', 'info')}
-          className="bg-accent-blue/20 border border-accent-blue/30 text-accent-blue
-                     py-2 px-4 rounded-lg hover:bg-accent-blue/30 transition-colors"
-        >
-          Test info toast
-        </button>
       </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+
+        <div className="bg-surface border border-surface-hover rounded-2xl p-4 text-center">
+          <div className="flex justify-center mb-2">
+            <Zap size={20} style={{ color: rank.color }} />
+          </div>
+          <p className="text-2xl font-bold text-text-primary">
+            {Math.round(profile?.elo_rating || 1200)}
+          </p>
+          <p className="text-text-muted text-xs mt-1" style={{ color: rank.color }}>
+            {rank.name}
+          </p>
+        </div>
+
+        <div className="bg-surface border border-surface-hover rounded-2xl p-4 text-center">
+          <div className="flex justify-center mb-2">
+            <Target size={20} className="text-success" />
+          </div>
+          <p className="text-2xl font-bold text-text-primary">
+            {profile?.stats?.total_correct || 0}
+          </p>
+          <p className="text-text-muted text-xs mt-1">Corecte</p>
+        </div>
+
+        <div className="bg-surface border border-surface-hover rounded-2xl p-4 text-center">
+          <div className="flex justify-center mb-2">
+            <Shield size={20} className="text-accent-blue" />
+          </div>
+          <p className="text-2xl font-bold text-text-primary">
+            {profile?.stats?.accuracy_percent || 0}%
+          </p>
+          <p className="text-text-muted text-xs mt-1">Acuratețe</p>
+        </div>
+
+      </div>
+
+      {/* Main grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <StreakWidget streak={profile?.current_streak || 0} />
+        <DailyGoalWidget
+          goal={dailyGoal}
+          onClaimed={loadDashboard}
+        />
+      </div>
+
+      {/* ELO Chart */}
+      <div className="mb-6">
+        <EloChart history={history} />
+      </div>
+
+      {/* Recommended */}
+      <RecommendedTasks tasks={recommended} loading={loadingRec} />
+
     </Layout>
   )
 }

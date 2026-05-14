@@ -1,14 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
-import { getRank } from '../utils/ranks'
 import api from '../api/axios'
 import {
   LayoutDashboard, Swords, Trophy,
-  User, LogOut, Zap
+  User, LogOut
 } from 'lucide-react'
 
 export default function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth()
+  const { logout, isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -31,7 +30,6 @@ export default function Navbar() {
 
   if (!isAuthenticated) return null
   
-  const rank = getRank(user?.elo_rating || 1200)
 
   return (
     <nav className="bg-surface border-b border-surface-hover px-4 py-3">
@@ -64,24 +62,17 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* ELO badge + logout */}
+        {/*logout */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-base px-3 py-2 rounded-lg">
-            <Zap size={14} style={{ color: rank.color }} />
-            <span className="text-text-primary text-sm font-semibold">
-              {Math.round(user?.elo_rating || 1200)}
-            </span>
-            <span className="text-xs hidden sm:block" style={{ color: rank.color }}>
-              {rank.name}
-            </span>
           </div>
-
           <button
             onClick={handleLogout}
             className="text-text-secondary hover:text-error transition-colors p-2 rounded-lg hover:bg-surface-hover"
             title="Deconectare"
           >
             <LogOut size={18} />
+            
           </button>
         </div>
 
