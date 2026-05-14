@@ -28,15 +28,10 @@
   --color-rank-diamond: #B9F2FF;
 }
 
-* {
-  box-sizing: border-box;
+
+body{
+  background-color: #0f172a;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-body {
-  background-color: #0F172A;
-  color: #F1F5F9;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
 }

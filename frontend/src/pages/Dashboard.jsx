@@ -91,7 +91,7 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-surface border border-surface-hover rounded-2xl p-4 text-center">
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-center m-2">
             <Target size={20} className="text-success" />
           </div>
           <p className="text-2xl font-bold text-text-primary">
@@ -128,7 +128,6 @@ export default function Dashboard() {
 
       {/* Recommended */}
       <RecommendedTasks tasks={recommended} loading={loadingRec} />
-
     </Layout>
   )
 }
